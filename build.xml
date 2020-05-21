@@ -1,0 +1,41 @@
+<project name="xserver" default="build" basedir=".">
+	<property name="srcDir" value="java/src"/>
+	<property name="libDir" value="java/lib"/>
+    <property name="tmpDir" value="tmp"/>
+    <property name="targetDir" value="dist"/>
+    
+    <target name="compile">
+        <mkdir dir="${tmpDir}"/>
+        <mkdir dir="${tmpDir}/classes"/>
+        <mkdir dir="${targetDir}"/>
+        <delete>
+        	<fileset dir="${targetDir}"/>
+        </delete>
+
+        <javac srcdir="${srcDir}" destdir="${tmpDir}/classes" 
+        	   target="1.8" debug="on" debuglevel="source,lines">
+            <classpath id="classpath">
+                <fileset dir="${libDir}" includes="*.jar"/>
+            </classpath>
+        </javac>
+        <copy todir="${tmpDir}/classes" overwrite="true">
+            <fileset dir="${srcDir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+    
+    <target name="build" depends="compile">
+        <jar basedir="${tmpDir}/classes" destfile="${targetDir}/xserver.jar">
+        </jar>
+        <copy todir="${targetDir}" overwrite="true">
+            <fileset dir="." includes="client.bat, server.bat, readme.txt"/>
+        </copy>
+        <copy todir="${targetDir}" overwrite="true">
+            <fileset dir="${libDir}" includes="**/*.jar"/>
+        </copy>
+        <jar destfile="${targetDir}/xserver.zip">
+        	<fileset dir="${targetDir}" includes="*.bat, readme.txt, **/*.jar"/>
+        </jar>
+        <delete dir="${tmpDir}/classes"/>
+    </target>
+</project>
+
