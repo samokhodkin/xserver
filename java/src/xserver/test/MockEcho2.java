@@ -21,7 +21,7 @@ public class MockEcho2 {
       JsonServiceManager localManager=new JsonServiceManager();
       JsonServiceManager remoteManager=new JsonServiceManager();
       
-      //установим эхо-сервис на удаленном конце
+      //создадим эхо-сервис на удаленном конце
       remoteManager.services.put("echo", new JsonService(){
          //название метода игнорируем
          public void call(

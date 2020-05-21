@@ -19,10 +19,23 @@ public class MockChannel implements StreamConnection<byte[]>{
    
    private boolean alive=true;
    
+   /**
+    * Создается имитация канала с двумя соединениями на концах, см. поля nearEnd и remoteEnd.
+    * Пакеты, посланные на одном конце будут получены на другом.
+    * При этом симулируется разбитие сообщений на пакеты сетевого уровня.
+    * Различие ближний-дальний условное, концы симметричны.
+    *  
+    * @param localAddress произвольная строка
+    * @param localPort произвольное число
+    * @param remoteAddress произвольная строка
+    * @param remotePort произвольное число
+    * @param maxChunk максимальная длина пакетов, на которые разбивается сообщение
+    * @param remote
+    */
    public MockChannel(
-      String localAddress, int localPort,
-      String remoteAddress, int remotePort,
-      int maxChunk, MockChannel... remote
+         String localAddress, int localPort,
+         String remoteAddress, int remotePort,
+         int maxChunk
    ){
       this.localAddress=localAddress;
       this.localPort=localPort;
@@ -30,9 +43,23 @@ public class MockChannel implements StreamConnection<byte[]>{
       this.remotePort=remotePort;
       this.maxChunk=maxChunk;
       this.nearEnd=this;
-      this.remoteEnd=this.remote= remote.length>0? remote[0]: new MockChannel(
+      this.remoteEnd=this.remote= new MockChannel(
          remoteAddress, remotePort, localAddress, localPort, maxChunk, this
       );
+   }
+   
+   private MockChannel(
+      String localAddress, int localPort,
+      String remoteAddress, int remotePort,
+      int maxChunk, MockChannel remote
+   ){
+      this.localAddress=localAddress;
+      this.localPort=localPort;
+      this.remoteAddress=remoteAddress;
+      this.remotePort=remotePort;
+      this.maxChunk=maxChunk;
+      this.nearEnd=this;
+      this.remoteEnd=this.remote= remote;
    }
    
    public void setListener(StreamConnection.Listener<byte[]> code){
